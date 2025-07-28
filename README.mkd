@@ -1,0 +1,7 @@
+# Run Project 
+   ' ' bash 
+uvicorn main:app --reload 
+
+
+'' bash
+fastapi dev main.py
