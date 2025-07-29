@@ -1,8 +1,14 @@
 from fastapi import FastAPI #Import FastAPI framework
+from langchain_cohere import ChatCohere # ChatCohere intrz chatmodel
+from dotenv import load_dotenv #Import load_dotenv to load environment variables
+
+load_dotenv() #Load environment variables from a .env file
 
 #Create an instance of FastAPI
 app = FastAPI()
 
+#instancia del model 
+model= ChatCohere()
 
 #Define un JSON responde 
 JSON_RESPONSE = {
@@ -26,17 +32,18 @@ from pydantic import BaseModel #Import BaseModel from Pydantic for data validati
 
 #Definie a Pydantic model for the request body
 class Chatbot(BaseModel):
-    question: str #Define a field for the question
-    user_id: int #Define a field for the user ID
+    question: str  # Add the question field to the model
+
 
 @app.post("/chatbot") #Define a route for the chatbot endpoint
 async def chatbot_endpoint(requestBody: Chatbot):
-    print(requestBody.question) #Print the question from the request body
+        
+    question = requestBody.question #Extract the question from the request body
+    response= model.invoke(question) #Invoke the ChatCohere model with the question
 
     return {
         "data": {
-            "response": "This is a response from the chatbot",
-            "user_id": requestBody.question,},
-            "status": "success",
-            "message": "Chatbot response generated successfully"
+            "question": requestBody.question},
+            "response": response.content #Return the chatbot's response 
     } #Return a JSON response with the chatbot's response and user ID
+
